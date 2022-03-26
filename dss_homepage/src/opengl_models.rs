@@ -12,12 +12,14 @@ pub mod models {
         pub bound_y: u32,
     }
 
+    #[derive(Clone)]
     pub struct Row {
         pub title: String,
         pub tiles: Vec<Tile>,
         pub hidden_tiles: i32,
     }
 
+    #[derive(Clone)]
     pub struct Tile {
         pub position: Point,
         pub tile: Rect,
@@ -27,10 +29,11 @@ pub mod models {
         pub tile_data: TileData,
     }
 
+    #[derive(Clone)]
     pub struct TileData {
-        pub image_id: String,
-        pub image_url: String,
-        pub image_path: Option<String>,
+        pub image_id: &'static str,
+        pub image_url: &'static str,
+        pub image_path: Option<&'static str>,
     }
 
     pub struct Focus {
