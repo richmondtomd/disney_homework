@@ -84,7 +84,7 @@ pub fn render(
                     Ok(_) => {
                         tile.title_data.image_path = Some(image_path.clone());
                     },
-                    Err(err) => {
+                    Err(_) => {
                         row.tiles.remove(tile_index as usize);
                         continue 'tile
                     }
