@@ -1,14 +1,16 @@
+use reqwest::Error;
+use serde::{de::DeserializeOwned, Deserialize};
 use serde_json::{Result, Value};
 use std::fs::File;
 use std::io::Read;
-use reqwest::Error;
-use serde::{Deserialize, de::DeserializeOwned};
 
 pub mod api {
     use super::*;
 
-    pub fn deserialize_api<T>(url: String) -> T 
-    where T: 'static + DeserializeOwned {
+    pub fn deserialize_api<T>(url: String) -> T
+    where
+        T: 'static + DeserializeOwned,
+    {
         let response = requests::get(url).unwrap();
         let api_json = response.text().unwrap();
 
@@ -20,26 +22,20 @@ pub mod api {
 
     pub fn download_image(url: &String, image_path: &String) -> std::result::Result<(), String> {
         match reqwest::blocking::get(format!("{}", url)) {
-            Ok(img) => {
-                match img.bytes() {
-                    Ok(img_bytes) => {
-                        match image::load_from_memory(&img_bytes) {
-                            Ok(image) => {
-                                match image.save(&image_path) {
-                                    Ok(_) => {},
-                                    Err(err) => {
-                                        return Err(format!("{}", err));
-                                    }
-                                }
-                            },
-                            Err(err) => {
-                                return Err(format!("{}", err));
-                            }
+            Ok(img) => match img.bytes() {
+                Ok(img_bytes) => match image::load_from_memory(&img_bytes) {
+                    Ok(image) => match image.save(&image_path) {
+                        Ok(_) => {}
+                        Err(err) => {
+                            return Err(format!("{}", err));
                         }
                     },
                     Err(err) => {
                         return Err(format!("{}", err));
                     }
+                },
+                Err(err) => {
+                    return Err(format!("{}", err));
                 }
             },
             Err(err) => {
