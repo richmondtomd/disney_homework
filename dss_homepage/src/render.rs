@@ -1,10 +1,8 @@
 use dss_models::home::ApiContent;
 use dss_models::set_ref::RefContent;
-use crate::opengl_models::models::{Grid, Tile, Row, TitleData, Focus, TileTexture};
+use crate::opengl_models::models::{Grid, Tile, Row, TitleData, Focus};
 
 use sdl2::pixels::Color;
-use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
 use sdl2::render::{WindowCanvas, Texture};
 use sdl2::rect::{Point, Rect};
 use sdl2::image::{LoadTexture, InitFlag};

@@ -21,7 +21,7 @@ fn main() -> Result<(), String> {
     let home_json: ApiContent = api::api::deserialize_api::<ApiContent>(String::from(request_url));
 
     // Build Home Grid initial position
-    let mut home_grid = populate_grid(home_json, request_url).expect("Grid failed to populate");
+    let mut home_grid = populate_grid(home_json).expect("Grid failed to populate");
 
     // Run Application
     let _ = build_app(&mut home_grid);
@@ -34,8 +34,8 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
     let sdl_context = sdl2::init()?;
     let video_subsystem = sdl_context.video()?;
     let _image_context = SDLImage::init(InitFlag::PNG | InitFlag::JPG)?;
-    let mut canvas_width = 1200;
-    let mut canvas_height = 675;
+    let canvas_width = 1200;
+    let canvas_height = 675;
 
     home_grid.bound_x = canvas_width;
     home_grid.bound_y = canvas_height;
@@ -140,8 +140,7 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
     Ok(())
 }
 
-//TODO: remove url, figure out lifetime
-pub fn populate_grid(content: ApiContent, url: &str) -> Result<Grid, String> {
+pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
 
     let standard_collection = content.data.standardCollection;
 
@@ -170,13 +169,13 @@ pub fn populate_grid(content: ApiContent, url: &str) -> Result<Grid, String> {
 
     //Populate Grid
     for container in standard_collection.containers {
-        //make a row
+        // New Row
         let mut row: Row = Row {
             title: container.set.text.title.full.set.default.content.unwrap(),
             tiles: vec!(),
             hidden_tiles: 0
         };
-        //add images to row
+        // Add Tiles to Row
         if container.set.items.is_some() {
             for item in container.set.items.unwrap() {
 
@@ -186,7 +185,6 @@ pub fn populate_grid(content: ApiContent, url: &str) -> Result<Grid, String> {
 
                 let mut tile = Tile {
                     position,
-                    texture: None,
                     width: 222, 
                     height: 125,
                     tile: Rect::new(0, 0, 222, 125),
@@ -216,7 +214,6 @@ pub fn populate_grid(content: ApiContent, url: &str) -> Result<Grid, String> {
     
                     let mut tile = Tile {
                         position,
-                        texture: None,
                         width: 222, 
                         height: 125,
                         tile: Rect::new(0, 0, 222, 125),
