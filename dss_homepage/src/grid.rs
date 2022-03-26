@@ -47,7 +47,7 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
                 let image_url = item.image.tile.image_component.series.default.url;
                 let image_id = item.image.tile.image_component.series.default.master_id;
 
-                let mut tile = Tile {
+                let tile = Tile {
                     position,
                     width: 222,
                     height: 125,
@@ -80,7 +80,7 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
                     let image_url = item.image.tile.image_component.series.default.url;
                     let image_id = item.image.tile.image_component.series.default.master_id;
 
-                    let mut tile = Tile {
+                    let tile = Tile {
                         position,
                         width: 222,
                         height: 125,
