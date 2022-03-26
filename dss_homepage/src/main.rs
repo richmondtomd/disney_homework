@@ -50,7 +50,6 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
 
     let mut canvas = window.into_canvas().build()
         .expect("could not make a canvas");
-    let texture_creator = canvas.texture_creator();
 
     let mut event_pump = sdl_context.event_pump()?;    
     let mut render = true;
