@@ -14,21 +14,23 @@ pub mod home {
     #[derive(Serialize, Deserialize, Debug)]
     #[serde(rename_all = "PascalCase")]
     pub struct Data {
-        pub standardCollection: StandardCollection
+        pub standard_collection: StandardCollection
     }
 
     #[derive(Serialize, Deserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
     pub struct StandardCollection {
-        pub callToAction: Option<String>,
-        pub collectionGroup: CollectionGroup,
-        pub collectionId: String,
+        pub call_to_action: Option<String>,
+        pub collection_group: CollectionGroup,
+        pub collection_id: String,
         pub containers: Vec<Container>
     }
 
     #[derive(Serialize, Deserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
     pub struct CollectionGroup {
-        pub collectionGroupId: String,
-        pub contentClass: String,
+        pub collection_group_id: String,
+        pub content_class: String,
         pub key: String
     }
     #[derive(Serialize, Deserialize, Debug)]
@@ -38,12 +40,13 @@ pub mod home {
         pub style: String
     }
     #[derive(Serialize, Deserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
     pub struct Set {
-        pub contentClass: String,
+        pub content_class: String,
         pub items: Option<Vec<Item>>,
-        pub refId: Option<String>,
-        pub refIdType: Option<String>,
-        pub refType: Option<String>,
+        pub ref_id: Option<String>,
+        pub ref_id_yype: Option<String>,
+        pub ref_type: Option<String>,
         pub r#type: Option<String>,
         pub text: Text
     }
@@ -64,10 +67,11 @@ pub mod home {
         pub default: Default
     }
     #[derive(Serialize, Deserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
     pub struct Default {
         pub content: Option<String>,
         pub language: Option<String>,
-        pub sourceEntity: Option<String>
+        pub source_entity: Option<String>
     }
 }
 
@@ -77,20 +81,23 @@ pub mod set_ref {
 
     #[derive(Serialize, Deserialize, Debug)]
     pub struct RefContent {
-        data: Data
+        pub data: Data
     }
 
     #[derive(Serialize, Deserialize, Debug)]
-    #[serde(rename_all = "PascalCase")]
     pub struct Data {
-        trendingSet: TrendingSet
+        #[serde(alias = "TrendingSet")]
+        #[serde(alias = "CuratedSet")]
+        #[serde(alias = "PersonalizedCuratedSet")]
+        pub set: Option<Set>
     }
 
     #[derive(Serialize, Deserialize, Debug)]
-    pub struct TrendingSet {
-        contentClass: Option<String>,
-        experimentToken: Option<String>,
-        items: Vec<Item>
+    #[serde(rename_all = "camelCase")]
+    pub struct Set {
+        content_class: Option<String>,
+        experiment_token: Option<String>,
+        pub items: Option<Vec<Item>>
     }
 
 }
@@ -99,35 +106,35 @@ pub mod mutual {
     use super::*;
 
     #[derive(Serialize, Deserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
     pub struct Item {
-        contentId: Option<String>,
-        callToAction: Option<String>,
-        currentAvailability: Option<CurrentAvailability>, 
-        encodedSeriesId: Option<String>,
-        episodeNumber: Option<String>,
-        episodeSequenceNumber: Option<String>,
-        episodeSeriesSequenceNumber: Option<String>,
-        originalLanguage: Option<String>,
-        programId: Option<String>,
-        programType: Option<String>,
-        seasonId: Option<String>,
-        seasonSequenceNumber: Option<String>,
+        content_id: Option<String>,
+        call_to_action: Option<String>,
+        current_availability: Option<CurrentAvailability>, 
+        encoded_series_id: Option<String>,
+        episode_number: Option<String>,
+        episode_sequence_number: Option<String>,
+        episode_series_sequence_number: Option<String>,
+        original_language: Option<String>,
+        program_id: Option<String>,
+        program_type: Option<String>,
+        season_id: Option<String>,
+        season_sequence_number: Option<String>,
         pub image: Image,
-        seriesId: Option<String>,
-        // text: String, //THIS IS WRONG
-        textExperienceId: Option<String>,
+        series_id: Option<String>,
+        text_experience_id: Option<String>,
         tags: Option<Vec<Tag>>,
-        mediaRights: Option<MediaRights>,
+        media_rights: Option<MediaRights>,
         ratings: Option<Vec<Rating>>,
         releases: Option<Vec<Release>>,
         r#type: String,
-        // videoArt: Vec<VideoArt> //ALSO WRONG
     }
 
     #[derive(Serialize, Deserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
     pub struct CurrentAvailability {
         region: String,
-        kidsMode: Option<bool>
+        kids_mode: Option<bool>
     }
 
     #[derive(Serialize, Deserialize, Debug)]
@@ -136,9 +143,10 @@ pub mod mutual {
     }
 
     #[derive(Serialize, Deserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
     pub struct Tile {
         #[serde(rename = "1.78")]
-        pub imageComponent: ImageComponent
+        pub image_component: ImageComponent
     }
 
     #[derive(Serialize, Deserialize, Debug)]
@@ -155,52 +163,44 @@ pub mod mutual {
     }
 
     #[derive(Serialize, Deserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
     pub struct Default {
-        pub masterId: String,
-        masterWidth: usize,
-        masterHeight: usize,
+        pub master_id: String,
+        master_width: usize,
+        master_height: usize,
         pub url: String
     }
 
     #[derive(Serialize, Deserialize, Debug)]
-    pub struct Text {
-
-    }
-
-    #[derive(Serialize, Deserialize, Debug)]
     pub struct Tag {
-        displayName: Option<String>, //assuming string
+        display_name: Option<String>,
         r#type: String,
-        value: String //might be string
+        value: String 
     }
 
     #[derive(Serialize, Deserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
     pub struct MediaRights {
-        downloadBlocked: bool,
-        pconBlocked: bool
+        download_blocked: bool,
+        pcon_blocked: bool
     }
 
     #[derive(Serialize, Deserialize, Debug)]
     pub struct Rating {
-        advisories: Vec<String>, //may need other DT
-        description: Option<String>, //may need other DT
+        advisories: Vec<String>,
+        description: Option<String>, 
         system: String,
         value: String
     }
 
     #[derive(Serialize, Deserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
     pub struct Release {
-        releaseDate: Option<String>,
-        releaseType: Option<String>,
-        releaseYear: usize, //DT?
+        release_date: Option<String>,
+        release_type: Option<String>,
+        release_year: usize, 
         territory: Option<String>
     }
-
-    // #[derive(Serialize, Deserialize, Debug)]
-    // pub struct VideoArt {
-    //     mediaMetadata: MediaMetadata, //check on this
-    //     purpose: String
-    // }
 
     #[derive(Serialize, Deserialize, Debug)]
     pub struct MediaMetadata {
