@@ -24,10 +24,10 @@ pub mod models {
         pub width: u32,
         pub height: u32,
         pub focused: bool,
-        pub title_data: TitleData
+        pub tile_data: TileData
     }
     
-    pub struct TitleData {
+    pub struct TileData {
         pub image_id: String,
         pub image_url: String,
         pub image_path: Option<String>

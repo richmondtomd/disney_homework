@@ -1,5 +1,5 @@
 use dss_models::{home::ApiContent, set_ref::RefContent};
-use crate::opengl_models::models::{Grid, Tile, Row, TitleData, Focus};
+use crate::opengl_models::models::{Grid, Tile, Row, TileData, Focus};
 use crate::api;
 
 use sdl2::rect::{Point, Rect};
@@ -55,7 +55,7 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
                     height: 125,
                     tile: Rect::new(0, 0, 222, 125),
                     focused: unfocused,
-                    title_data: TitleData {
+                    tile_data: TileData {
                         image_id: image_id,
                         image_url: image_url,
                         image_path: None
@@ -84,7 +84,7 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
                         height: 125,
                         tile: Rect::new(0, 0, 222, 125),
                         focused: unfocused,
-                        title_data: TitleData {
+                        tile_data: TileData {
                             image_id: image_id,
                             image_url: image_url,
                             image_path: None

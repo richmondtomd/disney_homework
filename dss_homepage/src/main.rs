@@ -52,7 +52,6 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
     let mut event_pump = sdl_context.event_pump()?;    
     let mut render = true;
     'running: loop {
-        // Handle events
         for event in event_pump.poll_iter() {
             match event {
                 Event::Quit {..} |
@@ -127,11 +126,9 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
             }
         }
 
-        // Render
         if render { render::render(&mut canvas, Color::RGB(3, 5, 20), home_grid)? };
         render = false;
 
-        // Time management!
         ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
     }
 

@@ -1,6 +1,6 @@
 use dss_models::home::ApiContent;
 use dss_models::set_ref::RefContent;
-use crate::opengl_models::models::{Grid, Tile, Row, TitleData, Focus};
+use crate::opengl_models::models::{Grid, Tile, Row, TileData, Focus};
 use crate::api::api::download_image;
 
 use sdl2::pixels::Color;
@@ -77,13 +77,13 @@ pub fn render(
                 break 'tile
             }
 
-            let image_path = format!("./assets/images/{}.jpeg", tile.title_data.image_id);
+            let image_path = format!("./assets/images/{}.jpeg", tile.tile_data.image_id);
 
-            if tile.title_data.image_path.is_none() {
+            if tile.tile_data.image_path.is_none() {
 
-                match download_image(&tile.title_data.image_url, &image_path) {
+                match download_image(&tile.tile_data.image_url, &image_path) {
                     Ok(_) => {
-                        tile.title_data.image_path = Some(image_path.clone());
+                        tile.tile_data.image_path = Some(image_path.clone());
                     },
                     Err(_) => {
                         row.tiles.remove(tile_index as usize);
