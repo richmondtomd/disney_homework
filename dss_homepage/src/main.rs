@@ -142,7 +142,7 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
 
 pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
 
-    let standard_collection = content.data.standardCollection;
+    let standard_collection = content.data.standard_collection;
 
     // Create window
     let sdl_context = sdl2::init()?;
@@ -180,8 +180,8 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
             for item in container.set.items.unwrap() {
 
                 // Set image metadata. Not downloaded until in screen.
-                let image_url = item.image.tile.imageComponent.series.default.url;
-                let image_id = item.image.tile.imageComponent.series.default.masterId;
+                let image_url = item.image.tile.image_component.series.default.url;
+                let image_id = item.image.tile.image_component.series.default.master_id;
 
                 let mut tile = Tile {
                     position,
@@ -201,16 +201,16 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
             }
         }
         else {
-            if container.set.refId.is_some() {
-                let ref_id = container.set.refId.unwrap();
+            if container.set.ref_id.is_some() {
+                let ref_id = container.set.ref_id.unwrap();
                 let ref_url = format!("https://cd-static.bamgrid.com/dp-117731241344/sets/{}.json", ref_id);
                 let ref_api: RefContent = api::api::deserialize_api::<RefContent>(String::from(ref_url));
 
                 for item in ref_api.data.set.unwrap().items.unwrap() {
 
                     // Set image metadata. Not downloaded until in screen.
-                    let image_url = item.image.tile.imageComponent.series.default.url;
-                    let image_id = item.image.tile.imageComponent.series.default.masterId;
+                    let image_url = item.image.tile.image_component.series.default.url;
+                    let image_id = item.image.tile.image_component.series.default.master_id;
     
                     let mut tile = Tile {
                         position,
