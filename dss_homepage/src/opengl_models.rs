@@ -1,7 +1,5 @@
 pub mod models {
-    use sdl2::render::{WindowCanvas, Texture, TextureCreator};
     use sdl2::rect::{Point, Rect};
-    use sdl2::video::WindowContext;
     
     pub struct Grid {
         pub rows: Vec<Row>,

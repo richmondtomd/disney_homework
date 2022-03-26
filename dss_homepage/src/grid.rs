@@ -2,15 +2,9 @@ use dss_models::{home::ApiContent, set_ref::RefContent};
 use crate::opengl_models::models::{Grid, Tile, Row, TitleData, Focus};
 use crate::api;
 
-use sdl2::pixels::Color;
-use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
-use sdl2::render::{WindowCanvas, Texture, TextureQuery};
 use sdl2::rect::{Point, Rect};
-use sdl2::image::{LoadTexture, InitFlag};
+use sdl2::image::InitFlag;
 use sdl2::image as SDLImage;
-use std::time::Duration;
-use image as Img;
 
 pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
 

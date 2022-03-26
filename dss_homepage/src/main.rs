@@ -3,18 +3,15 @@ pub mod render;
 pub mod opengl_models;
 pub mod grid;
 
-use dss_models::{home::ApiContent, set_ref::RefContent};
-use opengl_models::models::{Grid, Tile, Row, TitleData, Focus};
+use dss_models::home::ApiContent;
+use opengl_models::models::Grid;
 
 use sdl2::pixels::Color;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::render::{WindowCanvas, Texture, TextureQuery};
-use sdl2::rect::{Point, Rect};
-use sdl2::image::{LoadTexture, InitFlag};
+use sdl2::image::InitFlag;
 use sdl2::image as SDLImage;
 use std::time::Duration;
-use image as Img;
 
 fn main() -> Result<(), String> {
     // Get response from home api
