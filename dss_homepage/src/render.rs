@@ -57,6 +57,7 @@ pub fn render(
 
         let mut tile_index = row.hidden_tiles;
         let tile_count = row.tiles.len() as i32;
+
         'tile: while tile_index < tile_count {
             let tile = &mut row.tiles[tile_index as usize];
 
@@ -104,10 +105,11 @@ pub fn render(
                 canvas.set_draw_color(Color {r: 255, g: 255, b: 255, a: 255});
                 canvas.draw_rect(screen_rect)?;
             }
-
             start_x = start_x + (tile.tile.width() as i32) + 40;
+
             tile_index += 1;
         }
+
         start_y = start_y + (row.tiles[0].tile.height() as i32) + 45
     }
 
