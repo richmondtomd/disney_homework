@@ -21,7 +21,7 @@ pub mod api {
     }
 
     pub fn download_image(url: &String, image_path: &String) -> std::result::Result<(), String> {
-        match reqwest::blocking::get(format!("{}", url)) {
+        match reqwest::blocking::get(url) {
             Ok(img) => match img.bytes() {
                 Ok(img_bytes) => match image::load_from_memory(&img_bytes) {
                     Ok(image) => match image.save(&image_path) {
