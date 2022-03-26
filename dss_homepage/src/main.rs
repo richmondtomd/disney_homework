@@ -2,8 +2,7 @@ pub mod api;
 pub mod render;
 pub mod opengl_models;
 
-use dss_models::home::ApiContent;
-use dss_models::set_ref::RefContent;
+use dss_models::{home::ApiContent, set_ref::RefContent};
 use opengl_models::models::{Grid, Tile, Row, TitleData, Focus};
 
 use sdl2::pixels::Color;
@@ -203,9 +202,39 @@ pub fn populate_grid(content: ApiContent, url: &str) -> Result<Grid, String> {
     
                 row.tiles.push(tile)
             }
-            home_grid.rows.push(row);
         }
-        // TODO: Else we use ref set
+        else {
+            if container.set.refId.is_some() {
+                let ref_id = container.set.refId.unwrap();
+                let ref_url = format!("https://cd-static.bamgrid.com/dp-117731241344/sets/{}.json", ref_id);
+                let ref_api: RefContent = api::api::deserialize_api::<RefContent>(String::from(ref_url));
+
+                for item in ref_api.data.set.unwrap().items.unwrap() {
+
+                    // Set image metadata. Not downloaded until in screen.
+                    let image_url = item.image.tile.imageComponent.series.default.url;
+                    let image_id = item.image.tile.imageComponent.series.default.masterId;
+    
+                    let mut tile = Tile {
+                        position,
+                        texture: None,
+                        width: 222, 
+                        height: 125,
+                        tile: Rect::new(0, 0, 222, 125),
+                        focused: unfocused,
+                        title_data: TitleData {
+                            image_id: image_id,
+                            image_url: image_url,
+                            image_path: None
+                        }
+                    };
+                    if unfocused { unfocused = false };
+        
+                    row.tiles.push(tile)
+                }
+            }
+        }
+        home_grid.rows.push(row);
     }
 
     Ok(home_grid)

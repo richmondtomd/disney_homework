@@ -37,6 +37,10 @@ pub fn render(
         let mut font = ttf_context.load_font("./assets/Avenir-Roman.ttf", 14)?;
         font.set_style(sdl2::ttf::FontStyle::NORMAL);
 
+        if start_y > grid.bound_y as i32 {
+            break 'row
+        }
+
         let surface = font
             .render(row.title.as_ref())
             .blended(Color::RGBA(255, 255, 255, 255))
