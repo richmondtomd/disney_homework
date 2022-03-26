@@ -18,7 +18,7 @@ pub mod api {
         response
     }
 
-    pub fn download_image(url: String, image_path: String) -> Result<String> {
+    pub fn download_image(url: &String, image_path: &String) -> std::result::Result<(), String> {
         match reqwest::blocking::get(format!("{}", url)) {
             Ok(img) => {
                 match img.bytes() {
@@ -28,25 +28,25 @@ pub mod api {
                                 match image.save(&image_path) {
                                     Ok(_) => {},
                                     Err(err) => {
-                                        println!("unsupported fmt");
+                                        return Err(format!("{}", err));
                                     }
                                 }
                             },
-                            Err(_) => {
-                                println!("unsupported fmt");
+                            Err(err) => {
+                                return Err(format!("{}", err));
                             }
                         }
                     },
-                    Err(_) => {
-                        println!("unsupported fmt");
+                    Err(err) => {
+                        return Err(format!("{}", err));
                     }
                 }
             },
-            Err(_) => {
-                println!("unsupported fmt");
-            },
+            Err(err) => {
+                return Err(format!("{}", err));
+            }
         }
 
-        Ok(image_path)
+        Ok(())
     }
 }
