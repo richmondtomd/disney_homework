@@ -19,3 +19,8 @@ dss_models = { path = "../dss_models" }
 version = "0.35.2"
 default-features = false
 features = ["image", "ttf"]
+
+[[bin]]
+edition = "2021"
+name = "dss_homepage"
+path = "src/main.rs"
