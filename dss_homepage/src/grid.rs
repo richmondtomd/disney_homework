@@ -1,8 +1,6 @@
 use crate::api;
 use crate::opengl_models::models::{Focus, Grid, Row, Tile, TileData};
 
-
-
 use std::thread;
 use std::sync::{Mutex, Arc};
 
@@ -38,7 +36,6 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
         bound_y: 0,
     };
 
-    let mut tile_handles: Vec<std::thread::JoinHandle<Result<(), String>>> = vec![];
     //Populate Grid
     for container in standard_collection.containers {
         // New Row
@@ -50,23 +47,12 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
         // Add Tiles to Row
         if container.set.items.is_some() {
             let items = container.set.items.unwrap();
-            let tile_count = items.len();
 
             for item in items {
                 // Set image metadata. Not downloaded until in screen.
 
-                let image_url_clone = item.image.tile.image_component.series.default.url.clone();
-                let image_id = item.image.tile.image_component.series.default.master_id.clone();
-                let image_path = format!("./assets/images/{}.jpeg", image_id).clone();
-
-                let tile_handle = std::thread::spawn(move || {
-                    match api::api::download_image(&image_url_clone, &image_path) {
-                        Ok(_) => {
-                            Ok(())
-                        },
-                        Err(_) => return Err(String::from("Failed to download image")),
-                    }
-                });
+                let image_id = item.image.tile.image_component.series.default.master_id;
+                let image_url = item.image.tile.image_component.series.default.url;
 
                 let tile = Tile {
                     position,
@@ -75,9 +61,9 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
                     tile: Rect::new(0, 0, 222, 125),
                     focused: unfocused,
                     tile_data: TileData {
-                        image_id: item.image.tile.image_component.series.default.master_id,
-                        image_url: item.image.tile.image_component.series.default.url,
-                        image_path: format!("./assets/images/{}.jpeg", image_id),
+                        image_id: image_id,
+                        image_url: image_url,
+                        image_path: None,
                     },
                 };
                 if unfocused {
@@ -85,8 +71,6 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
                 };
 
                 row.tiles.push(tile);
-
-                tile_handles.push(tile_handle);
             }
         } else {
             if container.set.ref_id.is_some() {
@@ -104,18 +88,8 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
                 for item in items {
 
                     // Set image metadata. Not downloaded until in screen.
-                    let image_url_clone = item.image.tile.image_component.series.default.url.clone();
                     let image_id = item.image.tile.image_component.series.default.master_id.clone();
-                    let image_path = format!("./assets/images/{}.jpeg", image_id).clone();
-
-                    let tile_handle = std::thread::spawn(move || {
-                        match api::api::download_image(&image_url_clone, &image_path) {
-                            Ok(_) => {
-                                Ok(())
-                            },
-                            Err(_) => return Err(String::from("Failed to download image")),
-                        }
-                    });
+                    let image_url = item.image.tile.image_component.series.default.url.clone();
 
                     let tile = Tile {
                         position,
@@ -124,9 +98,9 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
                         tile: Rect::new(0, 0, 222, 125),
                         focused: unfocused,
                         tile_data: TileData {
-                            image_id: item.image.tile.image_component.series.default.master_id,
-                            image_url: item.image.tile.image_component.series.default.url,
-                            image_path: format!("./assets/images/{}.jpeg", image_id),
+                            image_id: image_id,
+                            image_url: image_url,
+                            image_path: None,
                         },
                     };
                     if unfocused {
@@ -134,7 +108,6 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
                     };
 
                     row.tiles.push(tile);
-                    tile_handles.push(tile_handle);
                 }
             }
         }
@@ -142,9 +115,6 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
         home_grid.rows.push(row);
     }
 
-    for tile_handle in tile_handles {
-        tile_handle.join().unwrap();
-    }
 
     Ok(home_grid)
 }

@@ -33,7 +33,7 @@ pub mod models {
     pub struct TileData {
         pub image_id: String,
         pub image_url: String,
-        pub image_path: String,
+        pub image_path: Option<String>,
     }
 
     pub struct Focus {

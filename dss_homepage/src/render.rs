@@ -3,6 +3,8 @@ use crate::opengl_models::models::{Focus, Grid, Row, Tile, TileData};
 use dss_models::home::ApiContent;
 use dss_models::set_ref::RefContent;
 
+use std::thread;
+
 use sdl2::image as SDLImage;
 use sdl2::image::{InitFlag, LoadTexture};
 use sdl2::pixels::Color;
@@ -22,6 +24,8 @@ pub fn render(canvas: &mut WindowCanvas, color: Color, grid: &mut Grid) -> Resul
 
     (grid.bound_x, grid.bound_y) = canvas.output_size()?;
 
+    let mut tile_handles: Vec<thread::JoinHandle<Result<(), String>>> = vec![];
+
     //draw grid
     let mut start_y = 40;
     let row_count = grid.rows.len() as i32;
@@ -36,12 +40,17 @@ pub fn render(canvas: &mut WindowCanvas, color: Color, grid: &mut Grid) -> Resul
             grid.bound_y,
             grid.bound_x,
             &texture_creator,
+            &mut tile_handles
         ) {
             Ok(_) => {}
             Err(_) => break 'row,
         };
 
         start_y = start_y + (row.tiles[0].tile.height() as i32) + 45
+    }
+
+    for tile_handle in tile_handles {
+        tile_handle.join().unwrap();
     }
 
     canvas.present();
@@ -57,6 +66,7 @@ fn render_row(
     bound_y: u32,
     bound_x: u32,
     texture_creator: &TextureCreator<WindowContext>,
+    tile_handles: &mut Vec<thread::JoinHandle<Result<(), String>>>
 ) -> Result<(), String> {
     let mut start_x = 40;
     let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string())?;
@@ -115,7 +125,7 @@ fn render_row(
             screen_rect = Rect::from_center(screen_position, tile.tile.width(), tile.tile.height());
         }
 
-        match render_tile(canvas, tile, focus, bound_x, screen_position, screen_rect) {
+        match render_tile(canvas, tile, focus, bound_x, screen_position, screen_rect, tile_handles) {
             Ok(_) => {
                 start_x = start_x + (tile.tile.width() as i32) + 40;
                 tile_index += 1;
@@ -128,7 +138,12 @@ fn render_row(
                 "Out of bounds" => {
                     break 'tile;
                 }
-                _ => {}
+                "Path not yet set" => {
+                    tile_index += 1;
+                },
+                _ => {
+                    return Err(String::from("Unknown Error"));
+                }
             },
         }
     }
@@ -143,25 +158,33 @@ fn render_tile(
     bound_x: u32,
     screen_position: Point,
     screen_rect: Rect,
+    tile_handles: &mut Vec<thread::JoinHandle<Result<(), String>>>
 ) -> Result<(), String> {
     if screen_rect.x() > bound_x as i32 {
         return Err(String::from("Out of bounds"));
     }
 
     let image_path = format!("./assets/images/{}.jpeg", tile.tile_data.image_id);
-
-    // match download_image(&tile.tile_data.image_url, &image_path) {
-    //     Ok(_) => {
-    //         tile.tile_data.image_path = image_path.clone();
-    //     }
-    //     Err(_) => return Err(String::from("Failed to download image")),
-    // }
+    if tile.tile_data.image_path.is_none() {
+        let image_url = tile.tile_data.image_url.clone();
+        let image_path_clone = image_path.clone();
+        let tile_handle = std::thread::spawn(move || {
+            match download_image(&image_url, &image_path_clone) {
+                Ok(_) => {
+                    Ok(())
+                },
+                Err(_) => return Err(String::from("Failed to download image")),
+            }
+        });
+        tile_handles.push(tile_handle);
+        tile.tile_data.image_path = Some(image_path);
+    }
+    
     let texture_creator = canvas.texture_creator();
-    let texture = match texture_creator.load_texture(image_path) {
+    let texture = match texture_creator.load_texture(format!("./assets/images/{}.jpeg", tile.tile_data.image_id)) {
         Ok(texture) => { texture },
-        Err(_) => return Err(String::from("Failed to download image")),
+        Err(_) => return Err(String::from("Path not yet set")),
     };
-    // let texture = texture_creator.load_texture(image_path)?;
 
     canvas.copy(&texture, None, screen_rect)?;
 
