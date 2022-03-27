@@ -86,7 +86,7 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
 
                 row.tiles.push(tile);
 
-                tile_handle.join().unwrap();
+                tile_handles.push(tile_handle);
             }
         } else {
             if container.set.ref_id.is_some() {
