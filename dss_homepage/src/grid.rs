@@ -116,7 +116,5 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
 
         home_grid.rows.push(row);
     }
-
-
     Ok(home_grid)
 }

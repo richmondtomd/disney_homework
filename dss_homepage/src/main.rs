@@ -202,7 +202,6 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
                 _ => {}
             }
         }
-
         render::render(&mut canvas, Color::RGB(3, 5, 20), home_grid)?;
 
         ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));

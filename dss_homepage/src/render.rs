@@ -50,7 +50,7 @@ pub fn render(canvas: &mut WindowCanvas, color: Color, grid: &mut Grid) -> Resul
     }
 
     for tile_handle in tile_handles {
-        tile_handle.join().unwrap();
+        let _ = tile_handle.join().unwrap();
     }
 
     canvas.present();
