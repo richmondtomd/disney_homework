@@ -67,20 +67,17 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
                     keycode: Some(Keycode::Left),
                     ..
                 } => {
-                    let mut new_focus_x = (home_grid.focus_x as i32) - 1;
+                    let new_focus_x = (home_grid.focus_x as i32) - 1;
 
                     while new_focus_x > 0 &&
                         ! home_grid.rows[home_grid.focus_y as usize].tiles
                         [new_focus_x as usize]
                         .rendered
                     {
-                        home_grid.rows[home_grid.focus_y as usize].tiles.remove(home_grid.rows[home_grid.focus_y as usize].tiles
-                            [new_focus_x as usize]);
-                        new_focus_x = new_focus_x - 1;
+                        home_grid.rows[home_grid.focus_y as usize].tiles.remove(new_focus_x as usize);
                     }
 
                     if new_focus_x >= 0 {
-                        println!("{},{}", new_focus_x, home_grid.focus_y);
                         home_grid.rows[home_grid.focus_y as usize].tiles
                             [home_grid.focus_x as usize]
                             .focused = false;
@@ -106,8 +103,7 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
                     keycode: Some(Keycode::Right),
                     ..
                 } => {
-                    println!("key down");
-                    let mut new_focus_x = (home_grid.focus_x as i32) + 1;
+                    let new_focus_x = (home_grid.focus_x as i32) + 1;
 
                     while new_focus_x
                         < (home_grid.rows[home_grid.focus_y as usize].tiles.len() as i32) &&
@@ -115,12 +111,12 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
                         [new_focus_x as usize]
                         .rendered
                     {
-                        new_focus_x = new_focus_x + 1;
+                        home_grid.rows[home_grid.focus_y as usize].tiles.remove(new_focus_x as usize);
                     }
+
                     if new_focus_x
                         < (home_grid.rows[home_grid.focus_y as usize].tiles.len() as i32)
                     {
-                        println!("{},{}", new_focus_x, home_grid.focus_y);
                         home_grid.rows[home_grid.focus_y as usize].tiles
                             [home_grid.focus_x as usize]
                             .focused = false;
@@ -130,19 +126,14 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
                             [home_grid.focus_x as usize]
                             .focused = true;
 
-                        println!("{}, {}", home_grid.focus.position.x()
-                        + (home_grid.focus.tile.width() as i32 * 3 / 2)
-                        + 40, home_grid.bound_x);
                         if home_grid.focus.position.x()
                             + (home_grid.focus.tile.width() as i32 * 3 / 2)
                             + 40
                             > (home_grid.bound_x as i32)
                         {
-                            println!("increment hidden rows");
                             home_grid.rows[home_grid.focus_y as usize].hidden_tiles =
                                 home_grid.rows[home_grid.focus_y as usize].hidden_tiles + 1;
                         } else {
-                            println!("move focus");
                             home_grid.focus.position = home_grid.rows[home_grid.focus_y as usize]
                                 .tiles[home_grid.focus_x as usize]
                                 .position;
@@ -155,15 +146,15 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
                     keycode: Some(Keycode::Up),
                     ..
                 } => {
-                    let mut new_focus_y = (home_grid.focus_y as i32) - 1;
+                    let new_focus_y = (home_grid.focus_y as i32) - 1;
 
-                    while new_focus_y > 0 &&
-                        ! home_grid.rows[new_focus_y as usize].tiles
-                        [home_grid.focus_x as usize]
-                        .rendered
-                    {
-                        new_focus_y = new_focus_y - 1;
-                    }
+                    // while new_focus_y > 0 &&
+                    //     ! home_grid.rows[new_focus_y as usize].tiles
+                    //     [home_grid.focus_x as usize]
+                    //     .rendered
+                    // {
+                    //     home_grid.rows[new_focus_y as usize].tiles.remove(new_focus_x as usize);
+                    // }
 
                     if new_focus_y >= 0 {
                         home_grid.rows[home_grid.focus_y as usize].tiles
@@ -193,15 +184,15 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
                     keycode: Some(Keycode::Down),
                     ..
                 } => {
-                    let mut new_focus_y = (home_grid.focus_y as i32) + 1;
+                    let new_focus_y = (home_grid.focus_y as i32) + 1;
 
-                    while new_focus_y < home_grid.rows.len() as i32 &&
-                        ! home_grid.rows[new_focus_y as usize].tiles
-                        [home_grid.focus_x as usize]
-                        .rendered
-                    {
-                        new_focus_y = new_focus_y - 1;
-                    }
+                    // while new_focus_y < home_grid.rows.len() as i32 &&
+                    //     ! home_grid.rows[new_focus_y as usize].tiles
+                    //     [home_grid.focus_x as usize]
+                    //     .rendered
+                    // {
+                    //     new_focus_y = new_focus_y - 1;
+                    // }
 
                     if new_focus_y < home_grid.rows.len() as i32 {
                         home_grid.rows[home_grid.focus_y as usize].tiles
