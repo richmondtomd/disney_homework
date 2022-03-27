@@ -150,16 +150,18 @@ fn render_tile(
 
     let image_path = format!("./assets/images/{}.jpeg", tile.tile_data.image_id);
 
-    if tile.tile_data.image_path.is_none() {
-        match download_image(&tile.tile_data.image_url, &image_path) {
-            Ok(_) => {
-                tile.tile_data.image_path = Some(image_path.clone());
-            }
-            Err(_) => return Err(String::from("Failed to download image")),
-        }
-    }
+    // match download_image(&tile.tile_data.image_url, &image_path) {
+    //     Ok(_) => {
+    //         tile.tile_data.image_path = image_path.clone();
+    //     }
+    //     Err(_) => return Err(String::from("Failed to download image")),
+    // }
     let texture_creator = canvas.texture_creator();
-    let texture = texture_creator.load_texture(image_path)?;
+    let texture = match texture_creator.load_texture(image_path) {
+        Ok(texture) => { texture },
+        Err(_) => return Err(String::from("Failed to download image")),
+    };
+    // let texture = texture_creator.load_texture(image_path)?;
 
     canvas.copy(&texture, None, screen_rect)?;
 

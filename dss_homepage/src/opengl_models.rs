@@ -31,9 +31,9 @@ pub mod models {
 
     #[derive(Clone)]
     pub struct TileData {
-        pub image_id: &'static str,
-        pub image_url: &'static str,
-        pub image_path: Option<&'static str>,
+        pub image_id: String,
+        pub image_url: String,
+        pub image_path: String,
     }
 
     pub struct Focus {

@@ -1,6 +1,8 @@
 use crate::api;
 use crate::opengl_models::models::{Focus, Grid, Row, Tile, TileData};
 
+
+
 use std::thread;
 use std::sync::{Mutex, Arc};
 
@@ -36,31 +38,84 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
         bound_y: 0,
     };
 
+    let mut tile_handles: Vec<std::thread::JoinHandle<Result<(), String>>> = vec![];
     //Populate Grid
     for container in standard_collection.containers {
         // New Row
-        // let mut row: Row = Row {
-        //     title: container.set.text.title.full.set.default.content.unwrap(),
-        //     tiles: vec![],
-        //     hidden_tiles: 0,
-        // };
+        let mut row: Row = Row {
+            title: container.set.text.title.full.set.default.content.unwrap(),
+            tiles: vec![],
+            hidden_tiles: 0,
+        };
         // Add Tiles to Row
-
-        let mut row = Arc::new(Mutex::new(
-            Row {
-                title: container.set.text.title.full.set.default.content.unwrap(),
-                tiles: vec![],
-                hidden_tiles: 0,
-            }
-        ));
-
-        let mut tile_handles: Vec<std::thread::JoinHandle<()>> = vec![];
         if container.set.items.is_some() {
-            for item in container.set.items.unwrap() {
+            let items = container.set.items.unwrap();
+            let tile_count = items.len();
+
+            for item in items {
                 // Set image metadata. Not downloaded until in screen.
+
+                let image_url_clone = item.image.tile.image_component.series.default.url.clone();
+                let image_id = item.image.tile.image_component.series.default.master_id.clone();
+                let image_path = format!("./assets/images/{}.jpeg", image_id).clone();
+
                 let tile_handle = std::thread::spawn(move || {
-                    let image_url = item.image.tile.image_component.series.default.url;
-                    let image_id = item.image.tile.image_component.series.default.master_id;
+                    match api::api::download_image(&image_url_clone, &image_path) {
+                        Ok(_) => {
+                            Ok(())
+                        },
+                        Err(_) => return Err(String::from("Failed to download image")),
+                    }
+                });
+
+                let tile = Tile {
+                    position,
+                    width: 222,
+                    height: 125,
+                    tile: Rect::new(0, 0, 222, 125),
+                    focused: unfocused,
+                    tile_data: TileData {
+                        image_id: item.image.tile.image_component.series.default.master_id,
+                        image_url: item.image.tile.image_component.series.default.url,
+                        image_path: format!("./assets/images/{}.jpeg", image_id),
+                    },
+                };
+                if unfocused {
+                    unfocused = false
+                };
+
+                row.tiles.push(tile);
+
+                tile_handle.join().unwrap();
+            }
+        } else {
+            if container.set.ref_id.is_some() {
+                // Set image metadata. Not downloaded until in screen.
+                let ref_id = container.set.ref_id.unwrap();
+                let ref_url = format!(
+                    "https://cd-static.bamgrid.com/dp-117731241344/sets/{}.json",
+                    ref_id
+                );
+                let ref_api: RefContent =
+                    api::api::deserialize_api::<RefContent>(String::from(ref_url));
+
+                let items = ref_api.data.set.unwrap().items.unwrap();
+
+                for item in items {
+
+                    // Set image metadata. Not downloaded until in screen.
+                    let image_url_clone = item.image.tile.image_component.series.default.url.clone();
+                    let image_id = item.image.tile.image_component.series.default.master_id.clone();
+                    let image_path = format!("./assets/images/{}.jpeg", image_id).clone();
+
+                    let tile_handle = std::thread::spawn(move || {
+                        match api::api::download_image(&image_url_clone, &image_path) {
+                            Ok(_) => {
+                                Ok(())
+                            },
+                            Err(_) => return Err(String::from("Failed to download image")),
+                        }
+                    });
 
                     let tile = Tile {
                         position,
@@ -69,121 +124,26 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
                         tile: Rect::new(0, 0, 222, 125),
                         focused: unfocused,
                         tile_data: TileData {
-                            image_id: image_id,
-                            image_url: image_url,
-                            image_path: None,
+                            image_id: item.image.tile.image_component.series.default.master_id,
+                            image_url: item.image.tile.image_component.series.default.url,
+                            image_path: format!("./assets/images/{}.jpeg", image_id),
                         },
                     };
                     if unfocused {
                         unfocused = false
                     };
 
-                    let mut rowB = row.lock().unwrap();
-                    (*rowB).tiles.push(tile);
-                    // row.lock().unwrap().tiles.push(tile)
-                });
-
-                tile_handle.join().unwrap();
-
-                // let image_url = item.image.tile.image_component.series.default.url;
-                // let image_id = item.image.tile.image_component.series.default.master_id;
-
-                // let tile = Tile {
-                //     position,
-                //     width: 222,
-                //     height: 125,
-                //     tile: Rect::new(0, 0, 222, 125),
-                //     focused: unfocused,
-                //     tile_data: TileData {
-                //         image_id: image_id,
-                //         image_url: image_url,
-                //         image_path: None,
-                //     },
-                // };
-                // if unfocused {
-                //     unfocused = false
-                // };
-
-                // row.tiles.push(tile)
-            }
-        } else {
-            if container.set.ref_id.is_some() {
-                // Set image metadata. Not downloaded until in screen.
-                let tile_handle = std::thread::spawn(move || {
-                    let ref_id = container.set.ref_id.unwrap();
-                    let ref_url = format!(
-                        "https://cd-static.bamgrid.com/dp-117731241344/sets/{}.json",
-                        ref_id
-                    );
-                    let ref_api: RefContent =
-                        api::api::deserialize_api::<RefContent>(String::from(ref_url));
-    
-                    for item in ref_api.data.set.unwrap().items.unwrap() {
-                        // Set image metadata. Not downloaded until in screen.
-                        let image_url = item.image.tile.image_component.series.default.url;
-                        let image_id = item.image.tile.image_component.series.default.master_id;
-    
-                        let tile = Tile {
-                            position,
-                            width: 222,
-                            height: 125,
-                            tile: Rect::new(0, 0, 222, 125),
-                            focused: unfocused,
-                            tile_data: TileData {
-                                image_id: image_id,
-                                image_url: image_url,
-                                image_path: None,
-                            },
-                        };
-                        if unfocused {
-                            unfocused = false
-                        };
-    
-                        row.lock().unwrap().tiles.push(tile);
-                    }
-                });
-
-                tile_handle.join().unwrap();
-
-                // let ref_id = container.set.ref_id.unwrap();
-                // let ref_url = format!(
-                //     "https://cd-static.bamgrid.com/dp-117731241344/sets/{}.json",
-                //     ref_id
-                // );
-                // let ref_api: RefContent =
-                //     api::api::deserialize_api::<RefContent>(String::from(ref_url));
-
-                // for item in ref_api.data.set.unwrap().items.unwrap() {
-                //     // Set image metadata. Not downloaded until in screen.
-                //     let image_url = item.image.tile.image_component.series.default.url;
-                //     let image_id = item.image.tile.image_component.series.default.master_id;
-
-                //     let tile = Tile {
-                //         position,
-                //         width: 222,
-                //         height: 125,
-                //         tile: Rect::new(0, 0, 222, 125),
-                //         focused: unfocused,
-                //         tile_data: TileData {
-                //             image_id: image_id,
-                //             image_url: image_url,
-                //             image_path: None,
-                //         },
-                //     };
-                //     if unfocused {
-                //         unfocused = false
-                //     };
-
-                //     row.lock().unwrap().tiles.push(tile)
-                // }
+                    row.tiles.push(tile);
+                    tile_handles.push(tile_handle);
+                }
             }
         }
-        // join the handles in the vector
-        for tile_handle in tile_handles {
-            tile_handle.join().unwrap();
-        }
 
-        home_grid.rows.push(*row.lock().unwrap());
+        home_grid.rows.push(row);
+    }
+
+    for tile_handle in tile_handles {
+        tile_handle.join().unwrap();
     }
 
     Ok(home_grid)
