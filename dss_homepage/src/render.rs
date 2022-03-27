@@ -131,14 +131,17 @@ fn render_row(
                 tile_index += 1;
             }
             Err(err) => match err.as_ref() {
-                "Failed to download image" => {
+                "Corrupt Image" => {
+                    println!("failed to download hit");
                     row.tiles.remove(tile_index as usize);
                     continue 'tile;
                 }
                 "Out of bounds" => {
+                    println!("out of bounds hit");
                     break 'tile;
                 }
                 "Path not yet set" => {
+                    println!("path not set hit");
                     tile_index += 1;
                 },
                 _ => {
@@ -173,7 +176,10 @@ fn render_tile(
                 Ok(_) => {
                     Ok(())
                 },
-                Err(_) => return Err(String::from("Failed to download image")),
+                Err(_) => {
+                    println!("hit");
+                    return Err(String::from("Corrupt Image"))
+                },
             }
         });
         tile_handles.push(tile_handle);
