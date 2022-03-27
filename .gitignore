@@ -1,8 +1,4 @@
-dss_models/target/
-dss_homepage/target/*
-! dss_homepage/target/release
-dss_homepage/target/release/*
-! dss_homepage/target/release/dss_homepage
+*/target/
 
 */Cargo.lock
 */assets/images/*
