@@ -52,7 +52,6 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
         .expect("could not make a canvas");
 
     let mut event_pump = sdl_context.event_pump()?;
-    let mut render = true;
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
@@ -97,7 +96,6 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
                             home_grid.screen_x -= 1;
                         }
                     }
-                    render = true;
                 }
                 Event::KeyDown {
                     keycode: Some(Keycode::Right),
@@ -140,21 +138,12 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
                             home_grid.screen_x += 1;
                         }
                     }
-                    render = true;
                 }
                 Event::KeyDown {
                     keycode: Some(Keycode::Up),
                     ..
                 } => {
                     let new_focus_y = (home_grid.focus_y as i32) - 1;
-
-                    // while new_focus_y > 0 &&
-                    //     ! home_grid.rows[new_focus_y as usize].tiles
-                    //     [home_grid.focus_x as usize]
-                    //     .rendered
-                    // {
-                    //     home_grid.rows[new_focus_y as usize].tiles.remove(new_focus_x as usize);
-                    // }
 
                     if new_focus_y >= 0 {
                         home_grid.rows[home_grid.focus_y as usize].tiles
@@ -178,21 +167,12 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
                                 .position;
                         }
                     }
-                    render = true;
                 }
                 Event::KeyDown {
                     keycode: Some(Keycode::Down),
                     ..
                 } => {
                     let new_focus_y = (home_grid.focus_y as i32) + 1;
-
-                    // while new_focus_y < home_grid.rows.len() as i32 &&
-                    //     ! home_grid.rows[new_focus_y as usize].tiles
-                    //     [home_grid.focus_x as usize]
-                    //     .rendered
-                    // {
-                    //     new_focus_y = new_focus_y - 1;
-                    // }
 
                     if new_focus_y < home_grid.rows.len() as i32 {
                         home_grid.rows[home_grid.focus_y as usize].tiles
@@ -218,16 +198,12 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
                                 .position;
                         }
                     }
-                    render = true;
                 }
                 _ => {}
             }
         }
 
-        if render {
-            render::render(&mut canvas, Color::RGB(3, 5, 20), home_grid)?
-        };
-        render = false;
+        render::render(&mut canvas, Color::RGB(3, 5, 20), home_grid)?;
 
         ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
     }
