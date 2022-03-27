@@ -24,7 +24,7 @@ pub fn render(canvas: &mut WindowCanvas, color: Color, grid: &mut Grid) -> Resul
 
     (grid.bound_x, grid.bound_y) = canvas.output_size()?;
 
-    let mut tile_handles: Vec<thread::JoinHandle<Result<(), String>>> = vec![];
+    let mut tile_handles: Vec<(thread::JoinHandle<Result<(), String>>, i32, i32)> = vec![];
 
     //draw grid
     let mut start_y = 40;
@@ -40,6 +40,7 @@ pub fn render(canvas: &mut WindowCanvas, color: Color, grid: &mut Grid) -> Resul
             grid.bound_y,
             grid.bound_x,
             &texture_creator,
+            row_index,
             &mut tile_handles
         ) {
             Ok(_) => {}
@@ -50,7 +51,12 @@ pub fn render(canvas: &mut WindowCanvas, color: Color, grid: &mut Grid) -> Resul
     }
 
     for tile_handle in tile_handles {
-        let _ = tile_handle.join().unwrap();
+        match tile_handle.0.join().unwrap() {
+            Ok(_) => {},
+            Err (_) => {
+                grid.rows[tile_handle.2 as usize].tiles.remove(tile_handle.1 as usize);
+            },
+        }
     }
 
     canvas.present();
@@ -66,7 +72,8 @@ fn render_row(
     bound_y: u32,
     bound_x: u32,
     texture_creator: &TextureCreator<WindowContext>,
-    tile_handles: &mut Vec<thread::JoinHandle<Result<(), String>>>
+    row_index: i32,
+    tile_handles: &mut Vec<(thread::JoinHandle<Result<(), String>>, i32, i32)>
 ) -> Result<(), String> {
     let mut start_x = 40;
     let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string())?;
@@ -125,7 +132,7 @@ fn render_row(
             screen_rect = Rect::from_center(screen_position, tile.tile.width(), tile.tile.height());
         }
 
-        match render_tile(canvas, tile, focus, bound_x, screen_position, screen_rect, tile_handles) {
+        match render_tile(canvas, tile, focus, bound_x, screen_position, screen_rect, tile_index, row_index, tile_handles) {
             Ok(_) => {
                 start_x = start_x + (tile.tile.width() as i32) + 40;
                 tile_index += 1;
@@ -157,7 +164,9 @@ fn render_tile(
     bound_x: u32,
     screen_position: Point,
     screen_rect: Rect,
-    tile_handles: &mut Vec<thread::JoinHandle<Result<(), String>>>
+    tile_index: i32,
+    row_index: i32,
+    tile_handles: &mut Vec<(thread::JoinHandle<Result<(), String>>, i32, i32)>
 ) -> Result<(), String> {
     if screen_rect.x() > bound_x as i32 {
         return Err(String::from("Out of bounds"));
@@ -177,7 +186,7 @@ fn render_tile(
                 },
             }
         });
-        tile_handles.push(tile_handle);
+        tile_handles.push((tile_handle, tile_index, row_index));
         tile.tile_data.image_path = Some(image_path);
     }
     
