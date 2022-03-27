@@ -27,6 +27,7 @@ pub mod models {
         pub height: u32,
         pub focused: bool,
         pub tile_data: TileData,
+        pub rendered: bool
     }
 
     #[derive(Clone)]

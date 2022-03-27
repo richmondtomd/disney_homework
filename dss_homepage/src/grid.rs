@@ -65,6 +65,7 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
                         image_url: image_url,
                         image_path: None,
                     },
+                    rendered: false
                 };
                 if unfocused {
                     unfocused = false
@@ -102,6 +103,7 @@ pub fn populate_grid(content: ApiContent) -> Result<Grid, String> {
                             image_url: image_url,
                             image_path: None,
                         },
+                        rendered: false
                     };
                     if unfocused {
                         unfocused = false

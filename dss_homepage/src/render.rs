@@ -131,17 +131,13 @@ fn render_row(
                 tile_index += 1;
             }
             Err(err) => match err.as_ref() {
-                "Corrupt Image" => {
-                    println!("failed to download hit");
-                    row.tiles.remove(tile_index as usize);
+                "Download Failed" => {
                     continue 'tile;
                 }
                 "Out of bounds" => {
-                    println!("out of bounds hit");
                     break 'tile;
                 }
                 "Path not yet set" => {
-                    println!("path not set hit");
                     tile_index += 1;
                 },
                 _ => {
@@ -177,8 +173,7 @@ fn render_tile(
                     Ok(())
                 },
                 Err(_) => {
-                    println!("hit");
-                    return Err(String::from("Corrupt Image"))
+                    return Err(String::from("Download Failed"))
                 },
             }
         });
@@ -188,7 +183,11 @@ fn render_tile(
     
     let texture_creator = canvas.texture_creator();
     let texture = match texture_creator.load_texture(format!("./assets/images/{}.jpeg", tile.tile_data.image_id)) {
-        Ok(texture) => { texture },
+        Ok(texture) => 
+        {   
+            tile.rendered = true;
+            texture 
+        },
         Err(_) => return Err(String::from("Path not yet set")),
     };
 
