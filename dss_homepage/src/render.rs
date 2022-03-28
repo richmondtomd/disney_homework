@@ -55,6 +55,7 @@ pub fn render(canvas: &mut WindowCanvas, color: Color, grid: &mut Grid) -> Resul
             Ok(_) => {},
             Err (_) => {
                 grid.rows[tile_handle.2 as usize].tiles.remove(tile_handle.1 as usize);
+                return Ok(())
             },
         }
     }
