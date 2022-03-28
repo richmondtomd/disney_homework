@@ -68,14 +68,6 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
                 } => {
                     let new_focus_x = (home_grid.focus_x as i32) - 1;
 
-                    while new_focus_x > 0 &&
-                        ! home_grid.rows[home_grid.focus_y as usize].tiles
-                        [new_focus_x as usize]
-                        .rendered
-                    {
-                        home_grid.rows[home_grid.focus_y as usize].tiles.remove(new_focus_x as usize);
-                    }
-
                     if new_focus_x >= 0 {
                         home_grid.rows[home_grid.focus_y as usize].tiles
                             [home_grid.focus_x as usize]
@@ -102,15 +94,6 @@ pub fn build_app(home_grid: &mut Grid) -> Result<(), String> {
                     ..
                 } => {
                     let new_focus_x = (home_grid.focus_x as i32) + 1;
-
-                    while new_focus_x
-                        < (home_grid.rows[home_grid.focus_y as usize].tiles.len() as i32) &&
-                        ! home_grid.rows[home_grid.focus_y as usize].tiles
-                        [new_focus_x as usize]
-                        .rendered
-                    {
-                        home_grid.rows[home_grid.focus_y as usize].tiles.remove(new_focus_x as usize);
-                    }
 
                     if new_focus_x
                         < (home_grid.rows[home_grid.focus_y as usize].tiles.len() as i32)
