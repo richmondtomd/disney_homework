@@ -2,7 +2,7 @@
 
 */Cargo.lock
 */assets/images/*
-!*/assets/images
+!*/assets/images/.placeholder
 
 .DS_Store
 */.DS_Store
